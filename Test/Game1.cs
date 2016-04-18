@@ -177,6 +177,14 @@ namespace Test
             if(iscolli == false)
             {
                 UpdateInput();
+                if (over)
+                {
+                    for (int j = 0; j < amount; j++)
+                    {
+                        velocity[j] = 0;
+                    }
+                }
+
             }
 
             // Add velocity to the current position.
@@ -189,8 +197,11 @@ namespace Test
 
             //timer stops
             if (timer.Time <= 0.0f)
+            {
                 timer.Finished = true;
                 over = true;
+            }
+                
             timer.Update(gameTime);
 
             // Bleed off velocity over time.
@@ -210,14 +221,28 @@ namespace Test
 
             if (iscolli || over)
             {
-                graphics.GraphicsDevice.Clear(Color.DarkRed);
+                if(iscolli)
+                {
+                    graphics.GraphicsDevice.Clear(Color.DarkRed);
+                    modelPosition.Z -= 0.3f;
+                    for (int r=0; r<=5; r++)
+                    {
+                        modelRotation += 0.05f;
+                    }
+
+                }
+                else
+                {
+                    graphics.GraphicsDevice.Clear(Color.Green);
+                }
+  
                 dead.Begin();
                 dead.DrawString(timer.Font, "Game over!", vectFont, Color.White);
                 dead.End();
             }
             else
             {
-                graphics.GraphicsDevice.Clear(Color.Green);
+                graphics.GraphicsDevice.Clear(Color.Black);
                 spriteBatch.Begin();
                 timer.Draw(spriteBatch);
                 spriteBatch.End();
