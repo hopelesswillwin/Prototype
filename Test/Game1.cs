@@ -315,24 +315,41 @@ namespace Test
             if (state.IsKeyDown(Keys.Escape))
                 Exit();
 
+            //timer startet
+            timer.Started = true;
+
 
             // Move our sprite based on arrow keys being pressed:
-            if (state.IsKeyDown(Keys.Right))
-                modelPosition.X += 0.3f;
-                timer.Started = true;
-            if (state.IsKeyDown(Keys.Left))
-                modelPosition.X -= 0.3f;
-                timer.Started = true;
-            if (state.IsKeyDown(Keys.Up))
-                modelPosition.Y += 0.3f;
-                timer.Started = true;
-            if (state.IsKeyDown(Keys.Down))
-                modelPosition.Y -= 0.3f;
-                timer.Started = true;
-            if (state.IsKeyDown(Keys.P))
-                timer.Paused = true;
-            if (state.IsKeyDown(Keys.Q))
-                timer.Paused = false;
+            modelRotation = 0f;
+            
+                if (state.IsKeyDown(Keys.Right))
+                {
+                    if (modelPosition.X < 12)
+                    {
+                       modelPosition.X += 0.3f;
+                    }
+                    modelRotation = 0.5f;
+                }
+                if (state.IsKeyDown(Keys.Left))
+                {
+                    if (modelPosition.X > -12)
+                    {
+                    modelPosition.X -= 0.3f;
+                    }
+                    modelRotation = -0.5f;
+                }
+             
+                if (state.IsKeyDown(Keys.Up))
+                    modelPosition.Y += 0.3f;
+
+                if (state.IsKeyDown(Keys.Down))
+                    if(modelPosition.Y > -35)
+                    modelPosition.Y -= 0.3f;
+
+                if (state.IsKeyDown(Keys.P))
+                    timer.Paused = true;
+                if (state.IsKeyDown(Keys.Q))
+                    timer.Paused = false;
         }
         
 
