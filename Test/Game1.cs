@@ -149,6 +149,7 @@ namespace Test
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            
         }
 
         /// <summary>
@@ -171,6 +172,7 @@ namespace Test
                     for (int j = 0; j < amount; j++)
                     {
                         velocity[j] = 0;
+                     
                     }
                 }
             }
@@ -184,6 +186,7 @@ namespace Test
                     for (int j = 0; j < amount; j++)
                     {
                         velocity[j] = 0;
+                       
                     }
                 }
 
@@ -239,14 +242,13 @@ namespace Test
                 else
                 {
                     graphics.GraphicsDevice.Clear(Color.Green);
+                                      
                     dead.Begin();
                     dead.DrawString(timer.Font, "Congratulation! You won!", vectFont, Color.White);
                     dead.End();
                 }
   
-             /*   dead.Begin();
-                dead.DrawString(timer.Font, "Game over!", vectFont, Color.White);
-                dead.End();*/
+  
             }
             else
             {
@@ -290,7 +292,7 @@ namespace Test
             {
                 Matrix[] transforms2 = new Matrix[spheres[i].Bones.Count];
                 spheres[i].CopyAbsoluteBoneTransformsTo(transforms2);
-
+                
                 // Draw the model. A model can have multiple meshes, so loop.
                 foreach (ModelMesh mesh in spheres[i].Meshes)
                 {
@@ -365,7 +367,8 @@ namespace Test
         
 
 private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world2)
-        {
+        {   if (iscolli || over) return false;
+            else { 
             for (int meshIndex1 = 0; meshIndex1 < model1.Meshes.Count; meshIndex1++)
             {
                 BoundingSphere sphere1 = model1.Meshes[meshIndex1].BoundingSphere;
@@ -379,6 +382,7 @@ private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world
                     if (sphere1.Intersects(sphere2))
                         return true;
                 }
+            }
             }
             return false;
         }
