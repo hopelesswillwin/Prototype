@@ -13,6 +13,7 @@ namespace Test
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D background;
 
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
@@ -79,14 +80,15 @@ namespace Test
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            this.background = this.Content.Load<Texture2D>("bg");
 
             dead = new SpriteBatch(GraphicsDevice);
             timer = new GameTimer(this, 10.0f);
             timer.Font = Content.Load<SpriteFont>("font");
             timer.Position = new Vector2(this.Window.ClientBounds.Width / 2 - timer.Font.MeasureString(timer.Text).X / 2, 0);
             Components.Add(timer);
-            vectFont = new Vector2(this.Window.ClientBounds.Width / 2 - timer.Font.MeasureString(timer.Text).X / 2,
-                this.Window.ClientBounds.Height / 2 - timer.Font.MeasureString(timer.Text).Y / 2);
+            vectFont = new Vector2(this.Window.ClientBounds.Width / 3, this.Window.ClientBounds.Height / 3);
+
 
             myModel = Content.Load<Model>("Ship");
 
@@ -229,29 +231,38 @@ namespace Test
                     {
                         modelRotation += 0.05f;
                     }
+                    dead.Begin();
+                    dead.DrawString(timer.Font, "Game over! You are dead!", vectFont, Color.White);
+                    dead.End();
 
                 }
                 else
                 {
                     graphics.GraphicsDevice.Clear(Color.Green);
+                    dead.Begin();
+                    dead.DrawString(timer.Font, "Congratulation! You won!", vectFont, Color.White);
+                    dead.End();
                 }
   
-                dead.Begin();
+             /*   dead.Begin();
                 dead.DrawString(timer.Font, "Game over!", vectFont, Color.White);
-                dead.End();
+                dead.End();*/
             }
             else
             {
-                graphics.GraphicsDevice.Clear(Color.Black);
-                spriteBatch.Begin();
+                GraphicsDevice.Clear(Color.Black);
+                this.spriteBatch.Begin();
                 timer.Draw(spriteBatch);
-                spriteBatch.End();
+                this.spriteBatch.Draw(background, new Rectangle(-10, 30, background.Width - 1100, background.Height - 500), Color.White);
+                this.spriteBatch.End();
+                base.Draw(gameTime);
+
             }
 
             // Copy any parent transforms.
             Matrix[] transforms = new Matrix[myModel.Bones.Count];
             myModel.CopyAbsoluteBoneTransformsTo(transforms);
-
+           
             // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in myModel.Meshes)
             {

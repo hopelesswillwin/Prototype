@@ -80,7 +80,7 @@ namespace Test
                     finished = true;
             }
         }
-        Text = ((int)time).ToString();
+        Text = "time: "+((int)time).ToString();
         base.Update(gameTime);
     }
 
