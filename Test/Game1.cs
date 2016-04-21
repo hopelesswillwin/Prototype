@@ -16,7 +16,7 @@ namespace Test
         Texture2D background;
 
         Model shots;
-        Vector3 shotsPosition = new Vector3 (0,-10,0);
+        Vector3 shotsPosition = new Vector3 (0,0,0);
 
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
@@ -270,31 +270,6 @@ namespace Test
             Matrix[] transforms = new Matrix[myModel.Bones.Count];
             myModel.CopyAbsoluteBoneTransformsTo(transforms);
 
-            //draw shots
-           /* Matrix[] transforms3 = new Matrix[shots.Bones.Count];
-            shots.CopyAbsoluteBoneTransformsTo(transforms3);
-            foreach (ModelMesh mesh in shots.Meshes)
-            {
-                // This is where the mesh orientation is set, as well 
-                // as our camera and projection.
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.World = transforms3[mesh.ParentBone.Index] *
-                        Matrix.CreateRotationY(0)
-                        * Matrix.CreateTranslation(modelPosition);
-                    effect.View = Matrix.CreateLookAt(camPosition,
-                        camtarget, Vector3.Up);
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                        MathHelper.ToRadians(45.0f), aspectRatio,
-                        1, 400);
-                }
-                // Draw the mesh, using the effects set above.
-                mesh.Draw();
-            } 
-            */
-
-
             // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in myModel.Meshes)
             {
@@ -344,7 +319,32 @@ namespace Test
                     mesh.Draw();
                 }
             }
-            
+
+            //draw shots
+            Matrix[] transforms3 = new Matrix[shots.Bones.Count];
+            shots.CopyAbsoluteBoneTransformsTo(transforms3);
+
+            foreach (ModelMesh mesh in shots.Meshes)
+            {
+                // This is where the mesh orientation is set, as well 
+                // as our camera and projection.
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = transforms3[mesh.ParentBone.Index] *
+                        Matrix.CreateRotationY(0)
+                        * Matrix.CreateTranslation(modelPosition);
+                    effect.View = Matrix.CreateLookAt(camPosition,
+                        camtarget, Vector3.Up);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+                        MathHelper.ToRadians(45.0f), aspectRatio,
+                        1, 400);
+                }
+                // Draw the mesh, using the effects set above.
+                mesh.Draw();
+            }
+
+
 
             base.Draw(gameTime);
         }
