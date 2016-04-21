@@ -15,6 +15,9 @@ namespace Test
         SpriteBatch spriteBatch;
         Texture2D background;
 
+        Model shots;
+        Vector3 shotsPosition;
+
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
         Model myModel;
@@ -91,6 +94,8 @@ namespace Test
 
 
             myModel = Content.Load<Model>("Ship");
+            shots = Content.Load<Model>("shots");
+            shotsPosition = modelPosition;
 
             Random rnd = new Random();
 
@@ -229,7 +234,7 @@ namespace Test
                 if(iscolli)
                 {
                     graphics.GraphicsDevice.Clear(Color.DarkRed);
-                    modelPosition.Z -= 0.3f;
+                    modelPosition.Z -= 0.1f;
                     for (int r=0; r<=5; r++)
                     {
                         modelRotation += 0.05f;
@@ -264,7 +269,30 @@ namespace Test
             // Copy any parent transforms.
             Matrix[] transforms = new Matrix[myModel.Bones.Count];
             myModel.CopyAbsoluteBoneTransformsTo(transforms);
-           
+
+            //draw shots
+            /*Matrix[] transforms3 = new Matrix[shots.Bones.Count];
+            shots.CopyAbsoluteBoneTransformsTo(transforms3);
+            foreach (ModelMesh mesh in shots.Meshes)
+            {
+                // This is where the mesh orientation is set, as well 
+                // as our camera and projection.
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = transforms3[mesh.ParentBone.Index] *
+                        Matrix.CreateRotationY(0)
+                        * Matrix.CreateTranslation(modelPosition);
+                    effect.View = Matrix.CreateLookAt(camPosition,
+                        camtarget, Vector3.Up);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+                        MathHelper.ToRadians(45.0f), aspectRatio,
+                        1, 400);
+                }
+                // Draw the mesh, using the effects set above.
+                mesh.Draw();
+            } */
+
             // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in myModel.Meshes)
             {
