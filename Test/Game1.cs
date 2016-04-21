@@ -16,7 +16,7 @@ namespace Test
         Texture2D background;
 
         Model shots;
-        Vector3 shotsPosition;
+        Vector3 shotsPosition = new Vector3 (0,-10,0);
 
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
@@ -271,7 +271,7 @@ namespace Test
             myModel.CopyAbsoluteBoneTransformsTo(transforms);
 
             //draw shots
-            /*Matrix[] transforms3 = new Matrix[shots.Bones.Count];
+           /* Matrix[] transforms3 = new Matrix[shots.Bones.Count];
             shots.CopyAbsoluteBoneTransformsTo(transforms3);
             foreach (ModelMesh mesh in shots.Meshes)
             {
@@ -291,7 +291,9 @@ namespace Test
                 }
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
-            } */
+            } 
+            */
+
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in myModel.Meshes)
