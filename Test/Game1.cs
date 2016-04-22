@@ -16,6 +16,7 @@ namespace Test
         SpriteBatch spriteBatch;
         Texture2D background;
 
+        // Shots
         Model shots;
         Vector3 shotsPosition = new Vector3 (0,-40,0);
         float shotvelocity = 1.0f;
@@ -24,14 +25,17 @@ namespace Test
         SoundEffect shooting_sound;
         SoundEffect no_ammo;
 
+        // Ship
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
         Model myModel;
         Vector3 modelVelocity = Vector3.Zero;
         float aspectRatio;
-        bool iscolli = false;
         int amount = 20;
 
+        bool iscolli = false;
+        
+        // Spheres
         Model[] spheres = new Model[20];
         float[] velocity = new float[20];
         float[] x_position = new float[20];
@@ -70,6 +74,7 @@ namespace Test
             // TODO: Add your initialization logic here
             camtarget = new Vector3(0.0f,0.0f,0.0f);
             camPosition = new Vector3(0.0f, -50.0f, 10.0f); //0,-50,10
+
             projectionmatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45.0f),
                 GraphicsDevice.DisplayMode.AspectRatio, 1.0f, 1000f);
             viewmatrix = Matrix.CreateLookAt(camPosition, camtarget, Vector3.Up);
@@ -93,19 +98,22 @@ namespace Test
             this.background = this.Content.Load<Texture2D>("bg");
 
             dead = new SpriteBatch(GraphicsDevice);
+
             timer = new GameTimer(this, 10.0f);
             timer.Font = Content.Load<SpriteFont>("font");
             timer.Position = new Vector2(this.Window.ClientBounds.Width / 2 - timer.Font.MeasureString(timer.Text).X / 2, 0);
             Components.Add(timer);
+
             vectFont = new Vector2(this.Window.ClientBounds.Width / 3, this.Window.ClientBounds.Height / 3);
 
             shooting_sound = Content.Load<SoundEffect>("shooting");
             no_ammo = Content.Load<SoundEffect>("no_ammo");
 
+            //Loading Ship + Shots
             myModel = Content.Load<Model>("Ship");
             shots = Content.Load<Model>("shots");
           
-
+            // Loading 3 types of spheres
             Random rnd = new Random();
 
             for (int i = 0; i < amount; i++)
@@ -174,14 +182,25 @@ namespace Test
         protected override void Update(GameTime gameTime)
         {
             // Get some input.
-            
-            if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
 
-            for (int i = 0; i < amount; i++)
+            //if shots go through
+            if (shotsPosition.Y >= 20)
             {
+                shotsPosition = new Vector3(0, -40, 0);
+                spaceIsPressed = false;
+                shotAmount -= 1;
+            }
+
+
+            //Collision spheres with ship and spheres with shots
+            for (int i = 0; i < amount; i++)
+            {   
+                // Ship
                 if (IsCollision(myModel, Matrix.CreateTranslation(modelPosition),
                     spheres[i], Matrix.CreateTranslation(position[i])))
                 {
@@ -190,10 +209,10 @@ namespace Test
                     for (int j = 0; j < amount; j++)
                     {
                         velocity[j] = 0;
-                     
                     }
                 }
-
+                
+                // Shots
                 if(IsCollision(shots, Matrix.CreateTranslation(shotsPosition),
                     spheres[i], Matrix.CreateTranslation(position[i])))
                 {
@@ -250,9 +269,11 @@ namespace Test
         protected override void Draw(GameTime gameTime)
         {
                 
-
+            // Game over
             if (iscolli || over)
-            {
+            {   
+
+                // Collision
                 if(iscolli)
                 {
                     graphics.GraphicsDevice.Clear(Color.DarkRed);
@@ -266,8 +287,11 @@ namespace Test
                     dead.End();
 
                 }
+
+                // Time over
                 else
-                {
+                {   
+                    
                     graphics.GraphicsDevice.Clear(Color.Green);
                                       
                     dead.Begin();
@@ -278,7 +302,8 @@ namespace Test
   
             }
             else
-            {
+            {   
+                // Background
                 GraphicsDevice.Clear(Color.Black);
                 this.spriteBatch.Begin();
                 timer.Draw(spriteBatch);
@@ -288,7 +313,11 @@ namespace Test
 
             }
 
+
             Draw_Model(Matrix.CreateScale(1, 1, 1), myModel, modelRotation, modelPosition, camPosition, camtarget, aspectRatio);
+
+
+            // Draw spheres
 
             for (int i = 0; i < amount; i++)
             {
@@ -305,6 +334,8 @@ namespace Test
         {
             // Get the game pad state.
             KeyboardState state = Keyboard.GetState();
+
+            // Shooting with space
             if (shotAmount > 0)
             {
                 if (state.IsKeyDown(Keys.Space))
