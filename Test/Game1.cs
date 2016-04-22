@@ -104,7 +104,7 @@ namespace Test
 
             dead = new SpriteBatch(GraphicsDevice);
 
-            timer = new GameTimer(this, 10.0f);
+            timer = new GameTimer(this, 100.0f);
             timer.Font = Content.Load<SpriteFont>("font");
             timer.Position = new Vector2(this.Window.ClientBounds.Width / 2 - timer.Font.MeasureString(timer.Text).X / 2, 0);
             Components.Add(timer);
@@ -119,53 +119,15 @@ namespace Test
             //Loading Ship + Shots
             myModel = Content.Load<Model>("Ship");
             shots = Content.Load<Model>("shots");
-          
+
             // Loading 3 types of spheres
+
+
             Random rnd = new Random();
 
             for (int i = 0; i < amount; i++)
             {
-                int v = rnd.Next(1, 4);
-                velocity[i] = v * 0.1f;
-                x_position[i] = rnd.Next(-20, 20);
-                y_position[i] = rnd.Next(12, 20);
-
-                switch (v)
-                {
-                    case 1:
-                        size[i] = 2;
-                        break;
-                    case 2:
-                        size[i] = 3;
-                        break;
-                    case 3:
-                        size[i] = 4;
-                        break;
-                    default:
-                        size[i] = 1;
-                        break;
-                }
-
-                switch (v)
-                {
-                    case 1:
-                        spheres[i] = Content.Load<Model>("Untexturedsphere1");
-                        break;
-                    case 2:
-                        spheres[i] = Content.Load<Model>("Untexturedsphere2");
-                        break;
-                    case 3:
-                        spheres[i] = Content.Load<Model>("Untexturedsphere3");
-                        break;
-                    default:
-                        spheres[i] = Content.Load<Model>("Untexturedsphere");
-                        break;
-                }
-
-                spheres[i] = Content.Load<Model>("Untexturedsphere");
-
-                position[i] = new Vector3(x_position[i], y_position[i], 0);
-
+                CreateSphere(i,rnd);
             }
 
             aspectRatio = graphics.GraphicsDevice.Viewport.AspectRatio;
@@ -210,6 +172,8 @@ namespace Test
 
 
             //Collision spheres with ship and spheres with shots
+
+            Random rnd = new Random();
             for (int i = 0; i < amount; i++)
             {   
                 // Ship
@@ -229,7 +193,8 @@ namespace Test
                     spheres[i], Matrix.CreateTranslation(position[i])))
                 {
                     shotAmount -= 1;
-                    position[i].Y = -59;
+                    //position[i].Y = -59;
+                    CreateSphere(i,rnd);
                     shotsPosition=new Vector3(0,-40,0);
                     spaceIsPressed = false;
                     score += (10*size[i]); 
@@ -245,7 +210,6 @@ namespace Test
                     for (int j = 0; j < amount; j++)
                     {
                         velocity[j] = 0;
-                       
                     }
                 }
 
@@ -257,6 +221,11 @@ namespace Test
             for(int i = 0; i < amount; i++)
             {
                 position[i].Y -= velocity[i];
+
+                if(position[i].Y<-33)
+                {
+                    CreateSphere(i, rnd);
+                }
             }
 
             //timer stops
@@ -476,6 +445,50 @@ private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
             }
+        }
+
+        void CreateSphere(int index,Random rnd)
+        {
+            int v = rnd.Next(1, 4);
+            velocity[index] = v * 0.1f;
+            x_position[index] = rnd.Next(-20, 20);
+            y_position[index] = rnd.Next(12, 20);
+
+            switch (v)
+            {
+                case 1:
+                    size[index] = 2;
+                    break;
+                case 2:
+                    size[index] = 3;
+                    break;
+                case 3:
+                    size[index] = 4;
+                    break;
+                default:
+                    size[index] = 1;
+                    break;
+            }
+
+            switch (v)
+            {
+                case 1:
+                    spheres[index] = Content.Load<Model>("Untexturedsphere1");
+                    break;
+                case 2:
+                    spheres[index] = Content.Load<Model>("Untexturedsphere2");
+                    break;
+                case 3:
+                    spheres[index] = Content.Load<Model>("Untexturedsphere3");
+                    break;
+                default:
+                    spheres[index] = Content.Load<Model>("Untexturedsphere");
+                    break;
+            }
+
+            spheres[index] = Content.Load<Model>("Untexturedsphere");
+
+            position[index] = new Vector3(x_position[index], y_position[index], 0);
         }
     }
 }
