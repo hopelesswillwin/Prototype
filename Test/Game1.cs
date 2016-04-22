@@ -17,6 +17,8 @@ namespace Test
 
         Model shots;
         Vector3 shotsPosition = new Vector3 (0,-40,0);
+        bool spaceIsPressed = false;
+        int shotAmount = 3;
 
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
@@ -179,6 +181,17 @@ namespace Test
                         velocity[j] = 0;
                      
                     }
+                }
+
+                if(IsCollision(shots, Matrix.CreateTranslation(shotsPosition),
+                    spheres[i], Matrix.CreateTranslation(position[i])))
+                {
+                    shotAmount -= 1;
+                    position[i].Y = -59;
+                    shotsPosition=new Vector3(0,-40,0);
+                    spaceIsPressed = false;
+                    
+                    
                 }
             }
 
@@ -353,15 +366,22 @@ namespace Test
         {
             // Get the game pad state.
             KeyboardState state = Keyboard.GetState();
-
-            if (state.IsKeyDown(Keys.Space))
+            if (shotAmount > 0)
             {
-                //shotsPosition = modelPosition;
-                shotsPosition.X = modelPosition.X;
-                shotsPosition.Y += 1;
+                 if (state.IsKeyDown(Keys.Space))
+                   {
+                        shotsPosition.X = modelPosition.X;
+                        spaceIsPressed = true;
+                       //shotsPosition = modelPosition;        
+                    }
+                   if (spaceIsPressed == true)
+                    {
+                        
+                        shotsPosition.Y += 1;
+                    }
                 
-
             }
+
 
             // If they hit esc, exit
             if (state.IsKeyDown(Keys.Escape))
@@ -418,7 +438,7 @@ private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world
                     BoundingSphere sphere2 = model2.Meshes[meshIndex2].BoundingSphere;
                     sphere2 = sphere2.Transform(world2);
 
-                    if (sphere1.Intersects(sphere2))
+                    if (sphere1.Intersects(sphere2)) 
                         return true;
                 }
             }
