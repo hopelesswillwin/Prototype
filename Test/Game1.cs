@@ -33,31 +33,32 @@ namespace Test
         float aspectRatio;
         int amount = 20;
 
-        bool iscolli = false;
+        bool iscolli = false;               //collision with ship
         
         // Spheres
-        Model[] spheres = new Model[20];
-        float[] velocity = new float[20];
-        float[] x_position = new float[20];
-        float[] y_position = new float[20];
-        float[] z_position = new float[20];
-        float[] size = new float[20];
+        Model[] spheres = new Model[20];    
+        float[] velocity = new float[20];   
+        float[] x_position = new float[20]; 
+        float[] y_position = new float[20]; 
+        float[] z_position = new float[20]; 
+        float[] size = new float[20];       
         Vector3[] position = new Vector3[20];
 
-        Vector3 camPosition;
-        Vector3 camtarget;
-        Matrix projectionmatrix;
-        Matrix viewmatrix;
-        Matrix world;
+        //camera and world
+        Vector3 camPosition;             
+        Vector3 camtarget;            
+        Matrix projectionmatrix;        
+        Matrix viewmatrix;         
+        Matrix world;        
+           
+        //score
+        SpriteFont score_font;   
+        float score = 0.0f;   
 
-
-        SpriteFont score_font;
-        float score = 0.0f;
-
-        SpriteBatch dead;
-        GameTimer timer;
-        Vector2 vectFont;
-        bool over; //whether game over or not
+        SpriteBatch dead; 
+        GameTimer timer;             
+        Vector2 vectFont;            
+        bool over;                          //whether game over or not
 
 
         public Game1()
@@ -295,8 +296,10 @@ namespace Test
                         modelRotation += 0.05f;
                     }
                     dead.Begin();
-                    dead.DrawString(timer.Font, "Game over! You are dead!", vectFont, Color.White);
-                    dead.DrawString(timer.Font, "Score: " + score, new Vector2(0, 0), Color.White);
+
+                    dead.DrawString(timer.Font, "Game over! You are dead!",vectFont, Color.White);
+                    dead.DrawString(timer.Font, "Score: " + score, new Vector2(0,0), Color.White);
+
                     dead.End();
 
                 }
@@ -308,8 +311,8 @@ namespace Test
                     graphics.GraphicsDevice.Clear(Color.Green);
                                       
                     dead.Begin();
-                    dead.DrawString(timer.Font, "Congratulation! You won!\n", vectFont, Color.White);
-                    dead.DrawString(timer.Font, "Score: " + score, new Vector2(0,0), Color.White);
+                    dead.DrawString(timer.Font, "Congratulation! You won!", vectFont, Color.White);
+                    dead.DrawString(timer.Font, "Score: " + score, new Vector2(0, 0), Color.White);
                     dead.End();
                 }
   
@@ -355,7 +358,7 @@ namespace Test
             {
                 if (state.IsKeyDown(Keys.Space))
                 {
-                    shotsPosition.X = modelPosition.X;
+                    shotsPosition = modelPosition;
                     spaceIsPressed = true;
 
                     SoundEffectInstance shooting_sound_instance = shooting_sound.CreateInstance();
