@@ -182,3 +182,21 @@
 /processorParam:TextureFormat=Compressed
 /build:Score.spritefont
 
+#begin music.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:music.ogg
+
+#begin lost.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:lost.ogg
+
+#begin won.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:won.ogg
+

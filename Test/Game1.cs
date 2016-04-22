@@ -15,6 +15,10 @@ namespace Test
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D background;
+        SoundEffect music;
+        SoundEffectInstance music_instance;
+        SoundEffect won;
+        SoundEffect lost;
 
         // Shots
         Model shots;
@@ -115,6 +119,14 @@ namespace Test
 
             shooting_sound = Content.Load<SoundEffect>("shooting");
             no_ammo = Content.Load<SoundEffect>("no_ammo");
+
+            music = Content.Load<SoundEffect>("music");
+            music_instance = music.CreateInstance();
+            music_instance.IsLooped = true;
+            music_instance.Play();
+
+            won = Content.Load<SoundEffect>("won");
+            lost = Content.Load<SoundEffect>("lost");
 
             //Loading Ship + Shots
             myModel = Content.Load<Model>("Ship");
@@ -253,17 +265,25 @@ namespace Test
                 
             // Game over
             if (iscolli || over)
-            {   
+            {
+
+                music_instance.Stop();
 
                 // Collision
                 if(iscolli)
                 {
                     graphics.GraphicsDevice.Clear(Color.DarkRed);
+
+                    SoundEffectInstance lost_instance = lost.CreateInstance();
+                    lost_instance.Volume = 0.5f;
+                    lost_instance.Play();
+
                     modelPosition.Z -= 0.1f;
                     for (int r=0; r<=5; r++)
                     {
                         modelRotation += 0.05f;
                     }
+
                     dead.Begin();
 
                     dead.DrawString(timer.Font, "Game over! You are dead!",vectFont, Color.White);
@@ -278,7 +298,10 @@ namespace Test
                 {   
                     
                     graphics.GraphicsDevice.Clear(Color.Green);
-                                      
+
+                    SoundEffectInstance won_instance = won.CreateInstance();
+                    won_instance.Play();
+
                     dead.Begin();
                     dead.DrawString(timer.Font, "Congratulation! You won!", vectFont, Color.White);
                     dead.DrawString(timer.Font, "Score: " + score, new Vector2(0, 0), Color.White);
