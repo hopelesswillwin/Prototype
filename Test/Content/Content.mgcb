@@ -176,3 +176,9 @@
 /processorParam:Quality=Best
 /build:shooting.mp3
 
+#begin Score.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Score.spritefont
+

@@ -50,6 +50,10 @@ namespace Test
         Matrix viewmatrix;
         Matrix world;
 
+
+        SpriteFont score_font;
+        float score = 0.0f;
+
         SpriteBatch dead;
         GameTimer timer;
         Vector2 vectFont;
@@ -105,6 +109,8 @@ namespace Test
             Components.Add(timer);
 
             vectFont = new Vector2(this.Window.ClientBounds.Width / 3, this.Window.ClientBounds.Height / 3);
+
+            score_font = Content.Load<SpriteFont>("score");
 
             shooting_sound = Content.Load<SoundEffect>("shooting");
             no_ammo = Content.Load<SoundEffect>("no_ammo");
@@ -196,6 +202,11 @@ namespace Test
                 shotAmount -= 1;
             }
 
+            if(!iscolli && !over)
+            {
+                score++; 
+            }
+
 
             //Collision spheres with ship and spheres with shots
             for (int i = 0; i < amount; i++)
@@ -220,6 +231,7 @@ namespace Test
                     position[i].Y = -59;
                     shotsPosition=new Vector3(0,-40,0);
                     spaceIsPressed = false;
+                    score += (10*size[i]); 
                 }
             }
 
@@ -284,6 +296,7 @@ namespace Test
                     }
                     dead.Begin();
                     dead.DrawString(timer.Font, "Game over! You are dead!", vectFont, Color.White);
+                    dead.DrawString(timer.Font, "Score: " + score, new Vector2(0, 0), Color.White);
                     dead.End();
 
                 }
@@ -295,7 +308,8 @@ namespace Test
                     graphics.GraphicsDevice.Clear(Color.Green);
                                       
                     dead.Begin();
-                    dead.DrawString(timer.Font, "Congratulation! You won!", vectFont, Color.White);
+                    dead.DrawString(timer.Font, "Congratulation! You won!\n", vectFont, Color.White);
+                    dead.DrawString(timer.Font, "Score: " + score, new Vector2(0,0), Color.White);
                     dead.End();
                 }
   
@@ -307,6 +321,7 @@ namespace Test
                 GraphicsDevice.Clear(Color.Black);
                 this.spriteBatch.Begin();
                 timer.Draw(spriteBatch);
+                spriteBatch.DrawString(score_font, "Score: "+score, new Vector2(0, 0), Color.White);
                 this.spriteBatch.Draw(background, new Rectangle(-10, 30, background.Width - 1100, background.Height - 500), Color.White);
                 this.spriteBatch.End();
                 base.Draw(gameTime);
@@ -349,12 +364,6 @@ namespace Test
                 if (spaceIsPressed == true)
                 {
                     shotsPosition.Y += shotvelocity;
-                    if (shotsPosition.Y >= 30)
-                    {
-                        shotsPosition = new Vector3(0, -40, 0);
-                        shotAmount--;
-                        spaceIsPressed = false;
-                    }
                 }
 
             }
