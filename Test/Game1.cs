@@ -18,7 +18,7 @@ namespace Test
 
         // Shots
         Model shots;
-        Vector3 shotsPosition = new Vector3 (0,-40,0);
+        Vector3 shotsPosition = new Vector3 (0,-50,0);
         float shotvelocity = 1.0f;
         bool spaceIsPressed = false;
         int shotAmount = 3;
@@ -160,7 +160,7 @@ namespace Test
             //if shots go through
             if (shotsPosition.Y >= 20)
             {
-                shotsPosition = new Vector3(0, -40, 0);
+                shotsPosition = new Vector3(0, -50, 0);
                 spaceIsPressed = false;
                 shotAmount -= 1;
             }
@@ -195,7 +195,7 @@ namespace Test
                     shotAmount -= 1;
                     //position[i].Y = -59;
                     CreateSphere(i,rnd);
-                    shotsPosition=new Vector3(0,-40,0);
+                    shotsPosition=new Vector3(0,-50,0);
                     spaceIsPressed = false;
                     score += (10*size[i]); 
                 }
@@ -222,7 +222,7 @@ namespace Test
             {
                 position[i].Y -= velocity[i];
 
-                if(position[i].Y<-33)
+                if(position[i].Y<-40)
                 {
                     CreateSphere(i, rnd);
                 }
