@@ -16,7 +16,7 @@ namespace Test
         Texture2D background;
 
         Model shots;
-        Vector3 shotsPosition = new Vector3 (0,0,0);
+        Vector3 shotsPosition = new Vector3 (0,-40,0);
 
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
@@ -94,8 +94,8 @@ namespace Test
 
 
             myModel = Content.Load<Model>("Ship");
-            shots = Content.Load<Model>("shots");
-            shotsPosition = modelPosition;
+            shots = Content.Load<Model>("UntexturedSphere");
+          
 
             Random rnd = new Random();
 
@@ -165,7 +165,7 @@ namespace Test
         protected override void Update(GameTime gameTime)
         {
             // Get some input.
-
+            
 
             for (int i = 0; i < amount; i++)
             {
@@ -333,7 +333,7 @@ namespace Test
                     effect.EnableDefaultLighting();
                     effect.World = transforms3[mesh.ParentBone.Index] *
                         Matrix.CreateRotationY(0)
-                        * Matrix.CreateTranslation(modelPosition);
+                        * Matrix.CreateTranslation(shotsPosition);
                     effect.View = Matrix.CreateLookAt(camPosition,
                         camtarget, Vector3.Up);
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(
@@ -353,6 +353,15 @@ namespace Test
         {
             // Get the game pad state.
             KeyboardState state = Keyboard.GetState();
+
+            if (state.IsKeyDown(Keys.Space))
+            {
+                //shotsPosition = modelPosition;
+                shotsPosition.X = modelPosition.X;
+                shotsPosition.Y += 1;
+                
+
+            }
 
             // If they hit esc, exit
             if (state.IsKeyDown(Keys.Escape))
@@ -395,7 +404,7 @@ namespace Test
                     timer.Paused = false;
         }
         
-
+  
 private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world2)
         {   if (iscolli || over) return false;
             else { 
@@ -418,3 +427,5 @@ private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world
         }
     }
 }
+
+
