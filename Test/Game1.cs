@@ -15,19 +15,23 @@ namespace Test
         SpriteBatch spriteBatch;
         Texture2D background;
 
+        // Shots
         Model shots;
         Vector3 shotsPosition = new Vector3 (0,-40,0);
         bool spaceIsPressed = false;
         int shotAmount = 3;
 
+        // Ship
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
         Model myModel;
         Vector3 modelVelocity = Vector3.Zero;
         float aspectRatio;
-        bool iscolli = false;
         int amount = 20;
 
+        bool iscolli = false;
+        
+        // Spheres
         Model[] spheres = new Model[20];
         float[] velocity = new float[20];
         float[] x_position = new float[20];
@@ -94,11 +98,11 @@ namespace Test
             Components.Add(timer);
             vectFont = new Vector2(this.Window.ClientBounds.Width / 3, this.Window.ClientBounds.Height / 3);
 
-
+            //Loading Ship + Shots
             myModel = Content.Load<Model>("Ship");
             shots = Content.Load<Model>("UntexturedSphere");
           
-
+            // Loading 3 types of spheres
             Random rnd = new Random();
 
             for (int i = 0; i < amount; i++)
@@ -167,10 +171,20 @@ namespace Test
         protected override void Update(GameTime gameTime)
         {
             // Get some input.
-            
-
-            for (int i = 0; i < amount; i++)
+            //if shots go through
+            if (shotsPosition.Y >= 20)
             {
+                shotsPosition = new Vector3(0, -40, 0);
+                spaceIsPressed = false;
+                shotAmount -= 1;
+                
+            }
+
+
+            //Collision spheres with ship and spheres with shots
+            for (int i = 0; i < amount; i++)
+            {   
+                // Ship
                 if (IsCollision(myModel, Matrix.CreateTranslation(modelPosition),
                     spheres[i], Matrix.CreateTranslation(position[i])))
                 {
@@ -182,7 +196,8 @@ namespace Test
                      
                     }
                 }
-
+                
+                // Shots
                 if(IsCollision(shots, Matrix.CreateTranslation(shotsPosition),
                     spheres[i], Matrix.CreateTranslation(position[i])))
                 {
@@ -241,9 +256,11 @@ namespace Test
         protected override void Draw(GameTime gameTime)
         {
                 
-
+            // Game over
             if (iscolli || over)
-            {
+            {   
+
+                // Collision
                 if(iscolli)
                 {
                     graphics.GraphicsDevice.Clear(Color.DarkRed);
@@ -257,8 +274,11 @@ namespace Test
                     dead.End();
 
                 }
+
+                // Time over
                 else
-                {
+                {   
+                    
                     graphics.GraphicsDevice.Clear(Color.Green);
                                       
                     dead.Begin();
@@ -269,7 +289,8 @@ namespace Test
   
             }
             else
-            {
+            {   
+                // Background
                 GraphicsDevice.Clear(Color.Black);
                 this.spriteBatch.Begin();
                 timer.Draw(spriteBatch);
@@ -283,7 +304,7 @@ namespace Test
             Matrix[] transforms = new Matrix[myModel.Bones.Count];
             myModel.CopyAbsoluteBoneTransformsTo(transforms);
 
-            // Draw the model. A model can have multiple meshes, so loop.
+            // Draw ship
             foreach (ModelMesh mesh in myModel.Meshes)
             {
                 // This is where the mesh orientation is set, as well 
@@ -304,7 +325,7 @@ namespace Test
                 mesh.Draw();
             }
 
-            // Copy any parent transforms.
+            // Draw spheres
 
             for (int i = 0; i < amount; i++)
             {
@@ -366,6 +387,8 @@ namespace Test
         {
             // Get the game pad state.
             KeyboardState state = Keyboard.GetState();
+
+            // Shooting with space
             if (shotAmount > 0)
             {
                  if (state.IsKeyDown(Keys.Space))
