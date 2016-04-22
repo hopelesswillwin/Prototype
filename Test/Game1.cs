@@ -275,7 +275,6 @@ namespace Test
                     graphics.GraphicsDevice.Clear(Color.DarkRed);
 
                     SoundEffectInstance lost_instance = lost.CreateInstance();
-                    lost_instance.Volume = 0.5f;
                     lost_instance.Play();
 
                     modelPosition.Z -= 0.1f;
