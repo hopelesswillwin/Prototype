@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using System;
 
 namespace Test
@@ -17,8 +18,11 @@ namespace Test
 
         Model shots;
         Vector3 shotsPosition = new Vector3 (0,-40,0);
+        float shotvelocity = 1.0f;
         bool spaceIsPressed = false;
         int shotAmount = 3;
+        SoundEffect shooting_sound;
+        SoundEffect no_ammo;
 
         Vector3 modelPosition = new Vector3(0,-33,0);
         float modelRotation = 0.0f;
@@ -51,6 +55,7 @@ namespace Test
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            //graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
         }
 
@@ -94,9 +99,11 @@ namespace Test
             Components.Add(timer);
             vectFont = new Vector2(this.Window.ClientBounds.Width / 3, this.Window.ClientBounds.Height / 3);
 
+            shooting_sound = Content.Load<SoundEffect>("shooting");
+            no_ammo = Content.Load<SoundEffect>("no_ammo");
 
             myModel = Content.Load<Model>("Ship");
-            shots = Content.Load<Model>("UntexturedSphere");
+            shots = Content.Load<Model>("shots");
           
 
             Random rnd = new Random();
@@ -140,7 +147,7 @@ namespace Test
                         break;
                 }
 
-                //spheres[i] = Content.Load<Model>("Untexturedsphere");
+                spheres[i] = Content.Load<Model>("Untexturedsphere");
 
                 position[i] = new Vector3(x_position[i], y_position[i], 0);
 
@@ -168,6 +175,10 @@ namespace Test
         {
             // Get some input.
             
+            if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                Exit();
+            }
 
             for (int i = 0; i < amount; i++)
             {
@@ -190,8 +201,6 @@ namespace Test
                     position[i].Y = -59;
                     shotsPosition=new Vector3(0,-40,0);
                     spaceIsPressed = false;
-                    
-                    
                 }
             }
 
@@ -279,85 +288,15 @@ namespace Test
 
             }
 
-            // Copy any parent transforms.
-            Matrix[] transforms = new Matrix[myModel.Bones.Count];
-            myModel.CopyAbsoluteBoneTransformsTo(transforms);
-
-            // Draw the model. A model can have multiple meshes, so loop.
-            foreach (ModelMesh mesh in myModel.Meshes)
-            {
-                // This is where the mesh orientation is set, as well 
-                // as our camera and projection.
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.World = transforms[mesh.ParentBone.Index] *
-                        Matrix.CreateRotationY(modelRotation)
-                        * Matrix.CreateTranslation(modelPosition);
-                    effect.View = Matrix.CreateLookAt(camPosition,
-                        camtarget, Vector3.Up);
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                        MathHelper.ToRadians(45.0f), aspectRatio,
-                        1, 400);
-                }
-                // Draw the mesh, using the effects set above.
-                mesh.Draw();
-            }
-
-            // Copy any parent transforms.
+            Draw_Model(Matrix.CreateScale(1, 1, 1), myModel, modelRotation, modelPosition, camPosition, camtarget, aspectRatio);
 
             for (int i = 0; i < amount; i++)
             {
-                Matrix[] transforms2 = new Matrix[spheres[i].Bones.Count];
-                spheres[i].CopyAbsoluteBoneTransformsTo(transforms2);
-                
-                // Draw the model. A model can have multiple meshes, so loop.
-                foreach (ModelMesh mesh in spheres[i].Meshes)
-                {
-                    // This is where the mesh orientation is set, as well 
-                    // as our camera and projection.
-                    foreach (BasicEffect effect in mesh.Effects)
-                    {
-                        effect.EnableDefaultLighting();
-                        effect.World = transforms2[mesh.ParentBone.Index] *
-                            Matrix.CreateRotationY(0)
-                            * Matrix.CreateTranslation(new Vector3(x_position[i],position[i].Y,0));
-                        effect.View = Matrix.CreateLookAt(camPosition,
-                            camtarget, Vector3.Up);
-                        effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                            MathHelper.ToRadians(45.0f), aspectRatio,
-                            1, 400);
-                    }
-                    // Draw the mesh, using the effects set above.
-                    mesh.Draw();
-                }
+                Draw_Model(Matrix.CreateScale(1/size[i], 1 / size[i], 1 / size[i]), spheres[i], 0, new Vector3(x_position[i], position[i].Y, 0), camPosition, camtarget, aspectRatio);
             }
 
             //draw shots
-            Matrix[] transforms3 = new Matrix[shots.Bones.Count];
-            shots.CopyAbsoluteBoneTransformsTo(transforms3);
-
-            foreach (ModelMesh mesh in shots.Meshes)
-            {
-                // This is where the mesh orientation is set, as well 
-                // as our camera and projection.
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.World = transforms3[mesh.ParentBone.Index] *
-                        Matrix.CreateRotationY(0)
-                        * Matrix.CreateTranslation(shotsPosition);
-                    effect.View = Matrix.CreateLookAt(camPosition,
-                        camtarget, Vector3.Up);
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                        MathHelper.ToRadians(45.0f), aspectRatio,
-                        1, 400);
-                }
-                // Draw the mesh, using the effects set above.
-                mesh.Draw();
-            }
-
-
+            Draw_Model(Matrix.CreateScale(0.1f,0.1f,0.1f), shots, 0, shotsPosition, camPosition, camtarget, aspectRatio);
 
             base.Draw(gameTime);
         }
@@ -368,24 +307,41 @@ namespace Test
             KeyboardState state = Keyboard.GetState();
             if (shotAmount > 0)
             {
-                 if (state.IsKeyDown(Keys.Space))
-                   {
-                        shotsPosition.X = modelPosition.X;
-                        spaceIsPressed = true;
-                       //shotsPosition = modelPosition;        
-                    }
-                   if (spaceIsPressed == true)
+                if (state.IsKeyDown(Keys.Space))
+                {
+                    shotsPosition.X = modelPosition.X;
+                    spaceIsPressed = true;
+
+                    SoundEffectInstance shooting_sound_instance = shooting_sound.CreateInstance();
+                    shooting_sound_instance.Play();
+                }
+                if (spaceIsPressed == true)
+                {
+                    shotsPosition.Y += shotvelocity;
+                    if (shotsPosition.Y >= 30)
                     {
-                        
-                        shotsPosition.Y += 1;
+                        shotsPosition = new Vector3(0, -40, 0);
+                        shotAmount--;
+                        spaceIsPressed = false;
                     }
-                
+                }
+
+            }
+            else
+            {
+                if (state.IsKeyDown(Keys.Space) && !over)
+                {
+                    SoundEffectInstance no_ammo_instance = no_ammo.CreateInstance();
+                    no_ammo.Play();
+                }
             }
 
 
             // If they hit esc, exit
             if (state.IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             //timer startet
             timer.Started = true;
@@ -426,24 +382,57 @@ namespace Test
         
   
 private bool IsCollision(Model model1, Matrix world1, Model model2, Matrix world2)
-        {   if (iscolli || over) return false;
-            else { 
-            for (int meshIndex1 = 0; meshIndex1 < model1.Meshes.Count; meshIndex1++)
+        {
+            if (iscolli || over)
             {
-                BoundingSphere sphere1 = model1.Meshes[meshIndex1].BoundingSphere;
-                sphere1 = sphere1.Transform(world1);
-
-                for (int meshIndex2 = 0; meshIndex2 < model2.Meshes.Count; meshIndex2++)
+                return false;
+            }
+            else
+            {
+                for (int meshIndex1 = 0; meshIndex1 < model1.Meshes.Count; meshIndex1++)
                 {
-                    BoundingSphere sphere2 = model2.Meshes[meshIndex2].BoundingSphere;
-                    sphere2 = sphere2.Transform(world2);
+                    BoundingSphere sphere1 = model1.Meshes[meshIndex1].BoundingSphere;
+                    sphere1 = sphere1.Transform(world1);
 
-                    if (sphere1.Intersects(sphere2)) 
-                        return true;
+                    for (int meshIndex2 = 0; meshIndex2 < model2.Meshes.Count; meshIndex2++)
+                    {
+                        BoundingSphere sphere2 = model2.Meshes[meshIndex2].BoundingSphere;
+                        sphere2 = sphere2.Transform(world2);
+
+                        if (sphere1.Intersects(sphere2))
+                            return true;
+                    }
                 }
             }
-            }
             return false;
+        }
+
+        void Draw_Model(Matrix scale_matrix, Model model, float rotation, Vector3 position, Vector3 cam, Vector3 target, float aspectratio)
+        {
+            // Copy any parent transforms.
+            Matrix[] transforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            // Draw the model. A model can have multiple meshes, so loop.
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                // This is where the mesh orientation is set, as well 
+                // as our camera and projection.
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = transforms[mesh.ParentBone.Index] * scale_matrix *
+                        Matrix.CreateRotationY(rotation)
+                        * Matrix.CreateTranslation(position);
+                    effect.View = Matrix.CreateLookAt(cam,
+                        target, Vector3.Up);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+                        MathHelper.ToRadians(45.0f), aspectratio,
+                        1, 400);
+                }
+                // Draw the mesh, using the effects set above.
+                mesh.Draw();
+            }
         }
     }
 }

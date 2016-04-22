@@ -164,3 +164,15 @@
 /processorParam:TextureFormat=DxtCompressed
 /build:shots.fbx
 
+#begin no_ammo.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:no_ammo.mp3
+
+#begin shooting.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:shooting.mp3
+
